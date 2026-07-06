@@ -1,6 +1,6 @@
 # Telco Customer Churn - MLOps Project
 
-This project implements a complete MLOps workflow for predicting customer churn using the Telco Customer Churn dataset from the Excel file stored in the v1 folder.
+This project implements a complete and production-style MLOps workflow for predicting customer churn using the Telco Customer Churn dataset from the Excel file stored in the v1 folder.
 
 ## Project goals
 - Load the raw Excel data from the v1 folder.
@@ -11,13 +11,14 @@ This project implements a complete MLOps workflow for predicting customer churn 
 
 ## Data source
 - Raw data file: data/v1/Telco_customer_churn (1).xlsx
-- Dataset size: 7043 rows
+- Dataset size: 7,043 rows
 - Target column: Churn Value
 
 ## Main results
 - Best model: Random Forest
 - F1 score: 0.8639
 - ROC-AUC: 0.9738
+- Verified with: pytest (2 passed)
 
 ## Run the pipeline
 ```bash
@@ -29,5 +30,20 @@ python -m src.run_pipeline
 pytest -q
 ```
 
-## Deployment
-The trained model is saved in models/best_model.joblib and can be served with the Flask app in docker/app.py.
+## Run the prediction API
+```bash
+python docker/app.py
+```
+
+## Docker
+```bash
+docker build -t telco-churn-api -f docker/Dockerfile .
+docker run -p 5000:5000 telco-churn-api
+```
+
+## Deliverables
+- Cleaned dataset: data/v2/telco_churn_clean.csv
+- Feature-engineered dataset: data/v3/telco_churn_featured.csv
+- Trained model: models/best_model.joblib
+- Feature schema: models/feature_columns.json
+- Final report: reports/final_report.md

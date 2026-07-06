@@ -20,7 +20,7 @@ DROP_COLUMNS = [
 
 
 def _encode_yes_no(series: pd.Series) -> pd.Series:
-    return series.replace({"No": 0, "Yes": 1, "No internet service": 0, "No phone service": 0}).fillna(0).astype(int)
+    return series.map({"No": 0, "Yes": 1, "No internet service": 0, "No phone service": 0}).fillna(0).astype(int)
 
 
 def preprocess_data(df: pd.DataFrame) -> pd.DataFrame:
@@ -46,23 +46,23 @@ def preprocess_data(df: pd.DataFrame) -> pd.DataFrame:
             data[col] = _encode_yes_no(data[col])
 
     if "Senior Citizen" in data.columns:
-        data["Senior Citizen"] = data["Senior Citizen"].replace({"No": 0, "Yes": 1}).fillna(0).astype(int)
+        data["Senior Citizen"] = data["Senior Citizen"].map({"No": 0, "Yes": 1}).fillna(0).astype(int)
 
     if "Partner" in data.columns:
-        data["Partner"] = data["Partner"].replace({"No": 0, "Yes": 1}).fillna(0).astype(int)
+        data["Partner"] = data["Partner"].map({"No": 0, "Yes": 1}).fillna(0).astype(int)
 
     if "Dependents" in data.columns:
-        data["Dependents"] = data["Dependents"].replace({"No": 0, "Yes": 1}).fillna(0).astype(int)
+        data["Dependents"] = data["Dependents"].map({"No": 0, "Yes": 1}).fillna(0).astype(int)
 
     if "Gender" in data.columns:
-        data["Gender"] = data["Gender"].replace({"Female": 1, "Male": 0}).fillna(0).astype(int)
+        data["Gender"] = data["Gender"].map({"Female": 1, "Male": 0}).fillna(0).astype(int)
 
     contract_map = {"Month-to-month": 0, "One year": 1, "Two year": 2}
     if "Contract" in data.columns:
         data["Contract"] = data["Contract"].map(contract_map).fillna(0).astype(int)
 
     if "Internet Service" in data.columns:
-        data["Internet Service"] = data["Internet Service"].replace({"No": 0, "DSL": 1, "Fiber optic": 2}).fillna(0).astype(int)
+        data["Internet Service"] = data["Internet Service"].map({"No": 0, "DSL": 1, "Fiber optic": 2}).fillna(0).astype(int)
 
     payment_method_map = {
         "Electronic check": 0,
