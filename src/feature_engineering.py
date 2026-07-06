@@ -14,8 +14,15 @@ def engineer_features(df: pd.DataFrame) -> pd.DataFrame:
     data["Tenure Group"] = pd.cut(data["Tenure Months"], bins=bins, labels=labels, include_lowest=True)
     data["Tenure Group"] = data["Tenure Group"].astype("object")
 
-    has_internet = data.get("Internet Service", 0).astype(int) > 0
-    has_phone = data.get("Phone Service", 0).astype(int) > 0
+    internet_service = data.get("Internet Service", 0)
+    phone_service = data.get("Phone Service", 0)
+    if not isinstance(internet_service, pd.Series):
+        internet_service = pd.Series([internet_service] * len(data), index=data.index)
+    if not isinstance(phone_service, pd.Series):
+        phone_service = pd.Series([phone_service] * len(data), index=data.index)
+
+    has_internet = internet_service.astype(int) > 0
+    has_phone = phone_service.astype(int) > 0
     data["Has Internet & Phone"] = (has_internet & has_phone).astype(int)
 
     data["Interaction_Contract_Tenure"] = data["Contract"] * data["Tenure Months"]
