@@ -18,6 +18,9 @@ build/
 mlruns/
 *.log
 
+# CatBoost
+catboost_info/
+
 # Data files 
 data/v1/*.csv
 data/v2/*.csv

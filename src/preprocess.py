@@ -18,9 +18,30 @@ DROP_COLUMNS = [
     "Churn Reason",
 ]
 
+YES_NO_COLUMNS = [
+    "Phone Service",
+    "Multiple Lines",
+    "Online Security",
+    "Online Backup",
+    "Device Protection",
+    "Tech Support",
+    "Streaming TV",
+    "Streaming Movies",
+    "Paperless Billing",
+]
+
 
 def _encode_yes_no(series: pd.Series) -> pd.Series:
     return series.map({"No": 0, "Yes": 1, "No internet service": 0, "No phone service": 0}).fillna(0).astype(int)
+
+
+def _clip_outliers(series: pd.Series) -> pd.Series:
+    q1 = series.quantile(0.25)
+    q3 = series.quantile(0.75)
+    iqr = q3 - q1
+    lower = q1 - 1.5 * iqr
+    upper = q3 + 1.5 * iqr
+    return series.clip(lower=lower, upper=upper)
 
 
 def preprocess_data(df: pd.DataFrame) -> pd.DataFrame:
@@ -28,20 +49,22 @@ def preprocess_data(df: pd.DataFrame) -> pd.DataFrame:
     data = df.copy()
     data = data.drop(columns=[col for col in DROP_COLUMNS if col in data.columns], errors="ignore")
 
-    data["Total Charges"] = pd.to_numeric(data["Total Charges"], errors="coerce").fillna(0)
-    data["Monthly Charges"] = pd.to_numeric(data["Monthly Charges"], errors="coerce")
+    for col in ["Total Charges", "Monthly Charges", "Tenure Months"]:
+        if col in data.columns:
+            data[col] = pd.to_numeric(data[col], errors="coerce")
 
-    for col in [
-        "Phone Service",
-        "Multiple Lines",
-        "Online Security",
-        "Online Backup",
-        "Device Protection",
-        "Tech Support",
-        "Streaming TV",
-        "Streaming Movies",
-        "Paperless Billing",
-    ]:
+    if "Total Charges" in data.columns:
+        data["Total Charges"] = data["Total Charges"].fillna(0)
+    if "Monthly Charges" in data.columns:
+        data["Monthly Charges"] = data["Monthly Charges"].fillna(data["Monthly Charges"].median())
+    if "Tenure Months" in data.columns:
+        data["Tenure Months"] = data["Tenure Months"].fillna(data["Tenure Months"].median())
+
+    for col in ["Monthly Charges", "Total Charges", "Tenure Months"]:
+        if col in data.columns:
+            data[col] = _clip_outliers(data[col])
+
+    for col in YES_NO_COLUMNS:
         if col in data.columns:
             data[col] = _encode_yes_no(data[col])
 
@@ -54,24 +77,15 @@ def preprocess_data(df: pd.DataFrame) -> pd.DataFrame:
     if "Dependents" in data.columns:
         data["Dependents"] = data["Dependents"].map({"No": 0, "Yes": 1}).fillna(0).astype(int)
 
-    if "Gender" in data.columns:
-        data["Gender"] = data["Gender"].map({"Female": 1, "Male": 0}).fillna(0).astype(int)
-
     contract_map = {"Month-to-month": 0, "One year": 1, "Two year": 2}
     if "Contract" in data.columns:
         data["Contract"] = data["Contract"].map(contract_map).fillna(0).astype(int)
 
-    if "Internet Service" in data.columns:
-        data["Internet Service"] = data["Internet Service"].map({"No": 0, "DSL": 1, "Fiber optic": 2}).fillna(0).astype(int)
-
-    payment_method_map = {
-        "Electronic check": 0,
-        "Mailed check": 1,
-        "Bank transfer (automatic)": 2,
-        "Credit card (automatic)": 3,
-    }
-    if "Payment Method" in data.columns:
-        data["Payment Method"] = data["Payment Method"].map(payment_method_map).fillna(0).astype(int)
+    for col in data.columns:
+        if col in {TARGET_COLUMN, "Contract"}:
+            continue
+        if data[col].dtype == "object" or pd.api.types.is_categorical_dtype(data[col]):
+            data = pd.concat([data.drop(columns=[col]), pd.get_dummies(data[col], prefix=col, dtype=int)], axis=1)
 
     if TARGET_COLUMN in data.columns:
         data[TARGET_COLUMN] = data[TARGET_COLUMN].astype(int)
