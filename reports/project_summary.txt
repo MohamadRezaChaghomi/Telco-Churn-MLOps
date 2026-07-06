@@ -1,0 +1,26 @@
+Telco Churn MLOps Project Summary
+================================
+
+Dataset:
+- Source: data/v1/Telco_customer_churn (1).xlsx
+- Rows: 7043
+- Features: 33 columns including churn label and churn value
+
+Pipeline:
+1. Load raw Excel data
+2. Clean and encode categorical features
+3. Create engineered features such as Avg Monthly Charge and Tenure Group
+4. Train multiple classifiers and select the best model
+5. Save final model and feature list
+6. Serve predictions through Flask and Docker
+
+Best model found:
+- Random Forest
+- F1 score: 0.8639
+- ROC-AUC: 0.9738
+
+Artifacts:
+- data/v2/telco_churn_clean.csv
+- data/v3/telco_churn_featured.csv
+- models/best_model.joblib
+- models/feature_columns.json
