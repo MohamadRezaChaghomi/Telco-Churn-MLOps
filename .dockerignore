@@ -1,0 +1,14 @@
+.git
+.gitignore
+.venv
+.pytest_cache
+__pycache__/
+*.pyc
+catboost_info/
+mlruns/
+notebooks/
+reports/
+tests/
+data/
+*.ipynb
+*.log
