@@ -16,9 +16,14 @@ This project implements a complete and production-style MLOps workflow for predi
 
 ## Main results
 - Best model: Random Forest
-- F1 score: 0.8639
-- ROC-AUC: 0.9738
+- F1 score: 0.8635
+- ROC-AUC: 0.9686
 - Verified with: pytest (2 passed)
+
+## Model comparison
+See [reports/model_comparison.md](reports/model_comparison.md) for the full comparison table.
+
+Random Forest was chosen as the final model because it achieved the highest F1-score among the evaluated classifiers, which is the most relevant metric for this imbalanced churn prediction task.
 
 ## Run the pipeline
 ```bash

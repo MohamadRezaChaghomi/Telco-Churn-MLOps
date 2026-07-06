@@ -26,8 +26,9 @@ The goal of this project was to build a complete MLOps workflow for predicting c
 
 ## 5. Best Model Result
 - Best model: Random Forest
-- F1 score: 0.8639
-- ROC-AUC: 0.9738
+- F1 score: 0.8635
+- ROC-AUC: 0.9686
+- Reason for selection: highest F1-score among the evaluated models on the test set, which is more appropriate than accuracy for imbalanced churn data.
 
 ## 6. Deliverables
 - Cleaned dataset: data/v2/telco_churn_clean.csv
